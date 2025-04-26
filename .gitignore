@@ -1,0 +1,4 @@
+tests/integration_tests/__pycache__/
+/venv
+task_manager/build
+.idea
