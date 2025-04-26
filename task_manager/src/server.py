@@ -27,14 +27,8 @@ class Task(BaseModel):
 
 manager = DBManager(DB_HOST)
 
-@asynccontextmanager
-async def lifespan(api: FastAPI):
-    await manager.connect()
-    await manager.create_tasks_table()
-    await manager.close()
-    yield
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 
 @app.get("/get_tasks")
