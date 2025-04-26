@@ -23,14 +23,14 @@ class DBManager:
         create tasks table if it doesn't exist
         """
         create_table_query = """
-                             CREATE TABLE IF NOT EXISTS tasks \
-                             ( \
+                             CREATE TABLE IF NOT EXISTS tasks 
+                             ( 
                                  task_id TEXT,
                                  assignee TEXT,
                                  title TEXT,
                                  description TEXT,
                                  creation_time TEXT
-                                 ); \
+                                 ); 
                              """
         async with self.conns.acquire() as conn:
             await conn.execute(create_table_query)
@@ -46,7 +46,7 @@ class DBManager:
         """
         insert_query = """
                        INSERT INTO tasks (task_id, assignee, title, description, creation_time)
-                       VALUES ($1, $2, $3, $4, $5); \
+                       VALUES ($1, $2, $3, $4, $5); 
                        """
         async with self.conns.acquire() as conn:
             await conn.execute(insert_query, task_id, assignee, title, description, creation_time)

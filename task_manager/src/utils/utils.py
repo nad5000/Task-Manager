@@ -13,7 +13,7 @@ def get_curr_time() -> str:
 
 def get_uuid() -> str:
     """
-    generate uuid for tasks
-    :return: uuid as string
+    generate uuid for task
+    :return: uuid, as string
     """
     return str(uuid.uuid4())

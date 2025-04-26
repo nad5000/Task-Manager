@@ -6,6 +6,7 @@ from utils.utils import get_curr_time, get_uuid
 from utils.db_utils import DBManager
 import uvicorn
 import os
+from fastapi import status
 
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
@@ -27,13 +28,13 @@ class Task(BaseModel):
 manager = DBManager(DB_HOST)
 
 @asynccontextmanager
-async def lifespan():
+async def lifespan(api: FastAPI):
     await manager.connect()
     await manager.create_tasks_table()
     await manager.close()
     yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/get_tasks")
@@ -46,7 +47,7 @@ async def get_tasks():
     await manager.close()
     return JSONResponse(content=tasks, status_code=200)
 
-@app.post("/add_task/")
+@app.post("/add_task/",status_code=status.HTTP_201_CREATED)
 async def add_task(task: Task):
     """
     insert a new task
@@ -55,7 +56,7 @@ async def add_task(task: Task):
     await manager.insert_task(**task.model_dump(), creation_time=get_curr_time(), task_id=get_uuid())
     await manager.close()
 
-@app.delete("/remove_task/")
+@app.delete("/remove_task/", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_task(item_id: TaskID):
     """
     remove a task
