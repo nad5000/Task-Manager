@@ -1,0 +1,74 @@
+services:
+  app_instance_1:
+    build: task_manager
+    container_name: app_instance_1
+    environment:
+      - DB_HOST=db_1
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db_1
+
+  app_instance_2:
+    build: task_manager
+    container_name: app_instance_2
+    environment:
+      - DB_HOST=db_2
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    ports:
+      - "8002:8001"
+    depends_on:
+      - db_2
+
+  db_1:
+    image: postgres:16
+    container_name: db_1
+    ports:
+      - "5432:5432"
+    entrypoint: ["/docker-entrypoint-initdb.d/docker-entrypoint.sh"]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./task_manager/postgresql/db_1/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./task_manager/postgresql/db_1/setup_subscription.sh:/docker-entrypoint-initdb.d/setup_subscription.sh
+      - ./task_manager/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./task_manager/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./task_manager/postgresql/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
+      - db_1_data:/var/lib/postgresql/data
+    command: [
+    "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"
+    ]
+
+  db_2:
+    image: postgres:16
+    container_name: db_2
+    ports:
+      - "5433:5432"
+    entrypoint: ["/docker-entrypoint-initdb.d/docker-entrypoint.sh"]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./task_manager/postgresql/db_2/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./task_manager/postgresql/db_2/setup_subscription.sh:/docker-entrypoint-initdb.d/setup_subscription.sh
+      - ./task_manager/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./task_manager/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./task_manager/postgresql/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
+      - db_2_data:/var/lib/postgresql/data
+    command: [
+    "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"
+    ]
+
+volumes:
+  db_1_data:
+  db_2_data:
