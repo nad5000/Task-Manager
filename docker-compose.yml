@@ -1,7 +1,4 @@
-version: '3.7'
-
 services:
-  # FastAPI instance 1 connected to db_1
   app_instance_1:
     build: task_manager
     container_name: app_instance_1
@@ -16,7 +13,6 @@ services:
     depends_on:
       - db_1
 
-  # FastAPI instance 2 connected to db_2
   app_instance_2:
     build: task_manager
     container_name: app_instance_2
@@ -31,37 +27,47 @@ services:
     depends_on:
       - db_2
 
-  # PostgreSQL instance 1 (db_1) for replication
   db_1:
-    image: postgres:latest
+    image: postgres:16
     container_name: db_1
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    volumes:
-      - db_1_data:/var/lib/postgresql/data
-      - ./postgresql/db_1/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./postgresql/db_1/pg_hba.conf:/etc/postgresql/pg_hba.conf
     ports:
       - "5432:5432"
-    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
-
-  # PostgreSQL instance 2 (db_2) for replication
-  db_2:
-    image: postgres:latest
-    container_name: db_2
+    entrypoint: ["/docker-entrypoint-initdb.d/docker-entrypoint.sh"]
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     volumes:
-      - db_2_data:/var/lib/postgresql/data
-      - ./postgresql/db_2/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./postgresql/db_2/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./task_manager/postgresql/db_1/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./task_manager/postgresql/db_1/setup_subscription.sh:/docker-entrypoint-initdb.d/setup_subscription.sh
+      - ./task_manager/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./task_manager/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./task_manager/postgresql/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
+      - db_1_data:/var/lib/postgresql/data
+    command: [
+    "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"
+    ]
+
+  db_2:
+    image: postgres:16
+    container_name: db_2
     ports:
       - "5433:5432"
-    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    entrypoint: ["/docker-entrypoint-initdb.d/docker-entrypoint.sh"]
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./task_manager/postgresql/db_2/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./task_manager/postgresql/db_2/setup_subscription.sh:/docker-entrypoint-initdb.d/setup_subscription.sh
+      - ./task_manager/postgresql/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./task_manager/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./task_manager/postgresql/docker-entrypoint.sh:/docker-entrypoint-initdb.d/docker-entrypoint.sh
+      - db_2_data:/var/lib/postgresql/data
+    command: [
+    "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"
+    ]
 
 volumes:
   db_1_data:
