@@ -1,7 +1,7 @@
 from task_manager.src.utils.db_utils import DBManager
 from task_manager.src.utils.utils import get_curr_time, get_uuid
 import pytest
-import time
+import asyncio
 
 
 DBS_HOST = "localhost"
@@ -52,7 +52,7 @@ async def test_sync_db():
     uuid = get_uuid()
     await manager.insert_task(title="title", description="description", assignee="assignee", creation_time=get_curr_time(), task_id=uuid)
     await manager.close()
-    time.sleep(5)
+    await asyncio.sleep(5)
     manager_2 = DBManager(DBS_HOST, DB_2_PORT)
     await manager_2.connect()
     tasks = await manager_2.get_all_tasks()

@@ -1,15 +1,15 @@
 DOCKER_COMPOSE=docker-compose
 TEST_DIR=tests/integration_tests
 
-integration-test: up-db wait-db run-tests down-db
+integration-test: up wait-db run-tests down
 
-up-db:
+up:
 	$(DOCKER_COMPOSE) up -d --build
 
 run-tests:
 	venv/bin/python -m pytest $(TEST_DIR)
 
-down-db:
+down:
 	$(DOCKER_COMPOSE) down --volumes
 
 wait-db:
@@ -25,4 +25,5 @@ wait-db:
 	done
 	@echo "db_2 is ready!"
 	sleep 5
+
 #wait 5 seconds after creation to finish containers setup

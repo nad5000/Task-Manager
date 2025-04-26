@@ -5,7 +5,7 @@ import uuid
 def get_curr_time() -> str:
     """
     get current time
-    :return: string of the current time
+    :return: string of the current time formatted as 'YYYY-MM-DD HH:MM:SS'
     """
     now = datetime.now()
     return str(now.strftime("%Y-%m-%d %H:%M:%S"))

@@ -26,6 +26,10 @@ Task Manager is a backend application built with FastApi that allows users to cr
 - `assignee`: Assigned user for the task  
 - `creation_time`: Timestamp when the task was created
 
+### Testing
+- Integration tests to make sure all DB functionalities work, including adding new tasks, deleting tasks and synchronizing the DBs
+- Run "make integration-test" to execute the tests
+
 ## License
 
 MIT License
