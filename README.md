@@ -22,7 +22,7 @@ Task Manager is a backend application built with FastApi that allows users to cr
 
 - `id`: Unique identifier
 - `title`: Task's title 
-- `description`: Detailed description  
+- `description`: Task's description  
 - `assignee`: Assigned user for the task  
 - `creation_time`: Timestamp when the task was created
 
