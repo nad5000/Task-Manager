@@ -34,7 +34,7 @@ app = FastAPI()
 @app.get("/get_tasks")
 async def get_tasks():
     """
-    get list of tasks
+    Get list of tasks
     """
     await manager.connect()
     tasks = await manager.get_all_tasks()
@@ -44,7 +44,7 @@ async def get_tasks():
 @app.post("/add_task/",status_code=status.HTTP_201_CREATED)
 async def add_task(task: Task):
     """
-    insert a new task
+    Insert a new task. A tasks contains title, description and assignee
     """
     await manager.connect()
     await manager.insert_task(**task.model_dump(), creation_time=get_curr_time(), task_id=get_uuid())
@@ -53,7 +53,7 @@ async def add_task(task: Task):
 @app.delete("/remove_task/", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_task(item_id: TaskID):
     """
-    remove a task
+    Remove a task (by task id)
     """
     await manager.connect()
     await manager.del_task(**item_id.model_dump())
